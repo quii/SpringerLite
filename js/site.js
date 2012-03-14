@@ -13,7 +13,8 @@
           dataType: 'jsonp',
           type: 'GET',
           success: function(json) {
-            return console.log(json);
+            console.log(json);
+            return $("#results").html(Mustache.to_html($('#template').html(), json));
           }
         });
       });

@@ -11,17 +11,30 @@
 
 <body id="home">
 
-	<h1>Search Springer's Library</h1>
-	<h2>Over 5 million online documents (e.g. journal articles, book chapters, protocols)</h2>
+	<h1>Springer Lite</h1>
+	<h2>Search Springer's databse of over 5 million online documents (e.g. journal articles, book chapters, protocols)</h2>
 	
 	<form id="search-form">
 		<label for="search">Search</label><input type="text" name="search" id="search" />
 		<input type="submit" text="Search" />
 	</form>
 
+	<div id="results"></div>
+	<div id="template" style="display:none;">
+		<h2>Search results</h2>
+		<ol>
+		{{#records}}
+			<li>
+				<h3><a href="{{url}}">{{title}}</a></h3>
+			</li>
+		{{/records}}
+		</ol>
+	</div>	
+
 	<footer>Created by <a href="http://twitter.com/quii">Chris James</a></footer>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="http://github.com/janl/mustache.js/raw/master/mustache.js"></script>
 	<script src="js/site.js" type="text/javascript" charset="utf-8"></script>
 </body>
 </html>
