@@ -1,11 +1,14 @@
 class SpringerLite
 
 	constructor: ->
-		$("#search-form").submit ->
-			url = "http://api.springer.com/metadata/json?q=physics&api_key=ueukuwx5guegu4ahjc6ajq8w"
-			$.getJSON(url, (data) ->
-				console.log data
-			)
-			false
+		$("#search-form").submit (e) ->
+			e.preventDefault()
+			url = "http://api.springer.com/metadata/jsonp?q=physics&api_key=ueukuwx5guegu4ahjc6ajq8w&callback=?"
+
+			$.ajax 
+				url: url
+				dataType: 'jsonp'
+				type: 'GET'
+				success: (json) -> console.log(json)
 $ ->
 	site = new SpringerLite()
