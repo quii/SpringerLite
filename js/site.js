@@ -47,8 +47,6 @@
 
   SpringerLite = (function() {
 
-    SpringerLite.prototype.resultsCache = {};
-
     function SpringerLite() {
       var _this = this;
       this.resultsCache = new SearchResultCache;
@@ -59,27 +57,32 @@
     }
 
     SpringerLite.prototype.doSearch = function(page) {
-      var term, url,
-        _this = this;
+      var term;
       $("#search-button").attr("value", "Searching...");
       term = $("#search").val();
       if (this.resultsCache.exists(term)) {
         return this.renderResult(term);
       } else {
-        url = "http://api.springer.com/metadata/jsonp?q=" + term + "&api_key=ueukuwx5guegu4ahjc6ajq8w&callback=?";
-        return $.ajax({
-          url: url,
-          dataType: 'jsonp',
-          type: 'GET',
-          success: function(json) {
-            var renderedHTML;
-            $("#search-button").attr("value", "Search");
-            renderedHTML = Mustache.to_html($('#template').html(), json);
-            _this.resultsCache.addResultToCache(term, renderedHTML);
-            return _this.renderResult(term);
-          }
-        });
+        return this.getResult(term);
       }
+    };
+
+    SpringerLite.prototype.getResult = function(term) {
+      var url,
+        _this = this;
+      url = "http://api.springer.com/metadata/jsonp?q=" + term + "&api_key=ueukuwx5guegu4ahjc6ajq8w&callback=?";
+      return $.ajax({
+        url: url,
+        dataType: 'jsonp',
+        type: 'GET',
+        success: function(json) {
+          var renderedHTML;
+          $("#search-button").attr("value", "Search");
+          renderedHTML = Mustache.to_html($('#template').html(), json);
+          _this.resultsCache.addResultToCache(term, renderedHTML);
+          return _this.renderResult(term);
+        }
+      });
     };
 
     SpringerLite.prototype.renderResult = function(term) {

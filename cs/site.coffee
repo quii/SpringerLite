@@ -14,8 +14,6 @@ class SearchResultCache
 
 class SpringerLite
 
-	resultsCache: {}
-
 	constructor: ->
 		@resultsCache = new SearchResultCache
 		$("#search-form").submit (e) =>
@@ -29,16 +27,19 @@ class SpringerLite
 		if(@resultsCache.exists(term))
 			@renderResult(term)
 		else
-			url = "http://api.springer.com/metadata/jsonp?q=#{term}&api_key=ueukuwx5guegu4ahjc6ajq8w&callback=?"
-			$.ajax 
-				url: url
-				dataType: 'jsonp'
-				type: 'GET'
-				success: (json) => 
-					$("#search-button").attr("value", "Search")
-					renderedHTML = Mustache.to_html($('#template').html(), json)
-					@resultsCache.addResultToCache(term, renderedHTML)
-					@renderResult(term)
+			@getResult(term)
+
+	getResult: (term) ->
+		url = "http://api.springer.com/metadata/jsonp?q=#{term}&api_key=ueukuwx5guegu4ahjc6ajq8w&callback=?"
+		$.ajax 
+			url: url
+			dataType: 'jsonp'
+			type: 'GET'
+			success: (json) => 
+				$("#search-button").attr("value", "Search")
+				renderedHTML = Mustache.to_html($('#template').html(), json)
+				@resultsCache.addResultToCache(term, renderedHTML)
+				@renderResult(term)
 
 	renderResult: (term) -> $("#results").html(@resultsCache.getHtml(term))
 
