@@ -19,26 +19,19 @@
     SearchResultCache.prototype.results = [];
 
     SearchResultCache.prototype.addResultToCache = function(term, renderedHTML) {
-      return this.results.push(new SearchResult(term, renderedHTML));
+      return localStorage.setItem(term, renderedHTML);
     };
 
     SearchResultCache.prototype.getHtml = function(term) {
-      return this.findResult(term)[0].html;
+      return this.findResult(term);
     };
 
     SearchResultCache.prototype.exists = function(term) {
-      return this.findResult(term).length > 0;
+      return this.findResult(term) != null;
     };
 
     SearchResultCache.prototype.findResult = function(term) {
-      var r, _i, _len, _ref, _results;
-      _ref = this.results;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        r = _ref[_i];
-        if (r.terms === term) _results.push(r);
-      }
-      return _results;
+      return localStorage.getItem(term);
     };
 
     return SearchResultCache;
@@ -59,13 +52,14 @@
 
     SpringerLite.prototype.doSearch = function(page) {
       var term;
-      searchButtonElement().attr("value", "Searching...");
+      searchButtonElement.attr("value", "Cuddle...");
       term = $("#search").val();
       if (this.resultsCache.exists(term)) {
-        return this.renderResult(term);
+        this.renderResult(term);
       } else {
-        return this.getResult(term);
+        this.getResult(term);
       }
+      return searchButtonElement.attr("value", "Search");
     };
 
     SpringerLite.prototype.getResult = function(term) {
@@ -78,7 +72,7 @@
         type: 'GET',
         success: function(json) {
           var renderedHTML;
-          searchButtonElement().attr("value", "Search");
+          searchButtonElement.attr("value", "Search");
           renderedHTML = Mustache.to_html($('#template').html(), json);
           _this.resultsCache.addResultToCache(term, renderedHTML);
           return _this.renderResult(term);
@@ -87,16 +81,16 @@
     };
 
     SpringerLite.prototype.renderResult = function(term) {
-      return resultsContainer().html(this.resultsCache.getHtml(term));
+      return resultsContainer.html(this.resultsCache.getHtml(term));
     };
 
-    searchButtonElement = function() {
+    searchButtonElement = (function() {
       return $("#search-button");
-    };
+    })();
 
-    resultsContainer = function() {
+    resultsContainer = (function() {
       return $("#results");
-    };
+    })();
 
     return SpringerLite;
 

@@ -4,13 +4,13 @@ class SearchResult
 class SearchResultCache
 	results: []
 
-	addResultToCache: (term, renderedHTML) -> @results.push(new SearchResult(term, renderedHTML))
+	addResultToCache: (term, renderedHTML) -> localStorage.setItem(term, renderedHTML)
 
-	getHtml: (term) -> @findResult(term)[0].html
+	getHtml: (term) -> @findResult(term)
 
-	exists: (term) -> @findResult(term).length>0
+	exists: (term) -> @findResult(term)?
 
-	findResult: (term) -> (r for r in @results when r.terms == term)
+	findResult: (term) -> localStorage.getItem(term)
 
 class SpringerLite
 
@@ -21,13 +21,15 @@ class SpringerLite
 			this.doSearch(1)
 
 	doSearch: (page) ->
-		searchButtonElement().attr("value", "Searching...")
+		searchButtonElement.attr("value", "Cuddle...")
 		term = $("#search").val()
 
 		if(@resultsCache.exists(term))
 			@renderResult(term)
 		else
 			@getResult(term)
+
+		searchButtonElement.attr("value", "Search")
 
 	getResult: (term) ->
 		url = "http://api.springer.com/metadata/jsonp?q=#{term}&api_key=ueukuwx5guegu4ahjc6ajq8w&callback=?"
@@ -36,15 +38,15 @@ class SpringerLite
 			dataType: 'jsonp'
 			type: 'GET'
 			success: (json) => 
-				searchButtonElement().attr("value", "Search")
+				searchButtonElement.attr("value", "Search")
 				renderedHTML = Mustache.to_html($('#template').html(), json)
 				@resultsCache.addResultToCache(term, renderedHTML)
 				@renderResult(term)
 
-	renderResult: (term) -> resultsContainer().html(@resultsCache.getHtml(term))
+	renderResult: (term) -> resultsContainer.html(@resultsCache.getHtml(term))
 
-	searchButtonElement = -> $("#search-button")
-	resultsContainer = -> $("#results")
+	searchButtonElement = do -> $("#search-button")
+	resultsContainer = do -> $("#results")
 
 $ ->
 	site = new SpringerLite()
