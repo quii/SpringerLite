@@ -13,6 +13,7 @@ class SpringerLite
 	constructor: ->
 		@resultsCache = new SearchResultCache
 		@handleSubmit()
+		@handleLoadMore()
 
 	doSearch: (page) ->
 		searchButtonElement.attr("value", "Searching...")
@@ -43,6 +44,10 @@ class SpringerLite
 		$("#search-form").submit (e) =>
 			e.preventDefault() 
 			this.doSearch(1)
+
+	handleLoadMore: ->
+		$("#load-more").click =>
+			console.log("loading more..")
 
 	searchButtonElement = do -> $("#search-button")
 	resultsContainer = do -> $("#results")

@@ -31,6 +31,7 @@
     function SpringerLite() {
       this.resultsCache = new SearchResultCache;
       this.handleSubmit();
+      this.handleLoadMore();
     }
 
     SpringerLite.prototype.doSearch = function(page) {
@@ -72,6 +73,13 @@
       return $("#search-form").submit(function(e) {
         e.preventDefault();
         return _this.doSearch(1);
+      });
+    };
+
+    SpringerLite.prototype.handleLoadMore = function() {
+      var _this = this;
+      return $("#load-more").click(function() {
+        return console.log("loading more..");
       });
     };
 
