@@ -1,8 +1,4 @@
-class SearchResult
-	constructor: (@terms, @html) ->
-
 class SearchResultCache
-	results: []
 
 	addResultToCache: (term, renderedHTML) -> localStorage.setItem(term, renderedHTML)
 
