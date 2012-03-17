@@ -1,22 +1,9 @@
 (function() {
-  var SearchResult, SearchResultCache, SpringerLite;
-
-  SearchResult = (function() {
-
-    function SearchResult(terms, html) {
-      this.terms = terms;
-      this.html = html;
-    }
-
-    return SearchResult;
-
-  })();
+  var SearchResultCache, SpringerLite;
 
   SearchResultCache = (function() {
 
     function SearchResultCache() {}
-
-    SearchResultCache.prototype.results = [];
 
     SearchResultCache.prototype.addResultToCache = function(term, renderedHTML) {
       return localStorage.setItem(term, renderedHTML);
@@ -52,7 +39,7 @@
 
     SpringerLite.prototype.doSearch = function(page) {
       var term;
-      searchButtonElement.attr("value", "Cuddle...");
+      searchButtonElement.attr("value", "Searching...");
       term = $("#search").val();
       if (this.resultsCache.exists(term)) {
         this.renderResult(term);
