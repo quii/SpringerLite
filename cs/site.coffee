@@ -21,7 +21,7 @@ class SpringerLite
 			this.doSearch(1)
 
 	doSearch: (page) ->
-		searchButtonElement.attr("value", "Cuddle...")
+		searchButtonElement.attr("value", "Searching...")
 		term = $("#search").val()
 
 		if(@resultsCache.exists(term))
