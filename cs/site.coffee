@@ -1,7 +1,7 @@
 class SearchResult
 	constructor: (@terms, @html) ->
-		console.log("made a search result")
 
+	@getHtml: (results, selectedTerm) -> (r for r in results when r.terms == selectedTerm)[0].html
 
 class SpringerLite
 
@@ -29,9 +29,7 @@ class SpringerLite
 	addResultToCache: (term, renderedHTML) ->
 		@results.push(new SearchResult(term, renderedHTML))
 
-	renderResult: (term) ->
-		selectedResult = (r for r in @results when r.terms == term)[0]
-		$("#results").html(selectedResult.html)
+	renderResult: (term) -> $("#results").html(SearchResult.getHtml(@results, term))
 
 $ ->
 	site = new SpringerLite()

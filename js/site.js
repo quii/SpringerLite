@@ -6,8 +6,20 @@
     function SearchResult(terms, html) {
       this.terms = terms;
       this.html = html;
-      console.log("made a search result");
     }
+
+    SearchResult.getHtml = function(results, selectedTerm) {
+      var r;
+      return ((function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = results.length; _i < _len; _i++) {
+          r = results[_i];
+          if (r.terms === selectedTerm) _results.push(r);
+        }
+        return _results;
+      })())[0].html;
+    };
 
     return SearchResult;
 
@@ -50,19 +62,7 @@
     };
 
     SpringerLite.prototype.renderResult = function(term) {
-      var r, selectedResult;
-      selectedResult = ((function() {
-        var _i, _len, _ref, _results;
-        _ref = this.results;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          r = _ref[_i];
-          if (r.terms === term) _results.push(r);
-        }
-        return _results;
-      }).call(this))[0];
-      console.log(selectedResult);
-      return $("#results").html(selectedResult.html);
+      return $("#results").html(SearchResult.getHtml(this.results, term));
     };
 
     return SpringerLite;
