@@ -29,12 +29,8 @@
     var resultsContainer, searchButtonElement;
 
     function SpringerLite() {
-      var _this = this;
       this.resultsCache = new SearchResultCache;
-      $("#search-form").submit(function(e) {
-        e.preventDefault();
-        return _this.doSearch(1);
-      });
+      this.handleSubmit();
     }
 
     SpringerLite.prototype.doSearch = function(page) {
@@ -69,6 +65,14 @@
 
     SpringerLite.prototype.renderResult = function(term) {
       return resultsContainer.html(this.resultsCache.getHtml(term));
+    };
+
+    SpringerLite.prototype.handleSubmit = function() {
+      var _this = this;
+      return $("#search-form").submit(function(e) {
+        e.preventDefault();
+        return _this.doSearch(1);
+      });
     };
 
     searchButtonElement = (function() {

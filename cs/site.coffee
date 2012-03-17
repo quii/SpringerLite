@@ -12,9 +12,7 @@ class SpringerLite
 
 	constructor: ->
 		@resultsCache = new SearchResultCache
-		$("#search-form").submit (e) =>
-			e.preventDefault() 
-			this.doSearch(1)
+		@handleSubmit()
 
 	doSearch: (page) ->
 		searchButtonElement.attr("value", "Searching...")
@@ -40,6 +38,11 @@ class SpringerLite
 				@renderResult(term)
 
 	renderResult: (term) -> resultsContainer.html(@resultsCache.getHtml(term))
+
+	handleSubmit: ->
+		$("#search-form").submit (e) =>
+			e.preventDefault() 
+			this.doSearch(1)
 
 	searchButtonElement = do -> $("#search-button")
 	resultsContainer = do -> $("#results")
