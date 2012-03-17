@@ -1,9 +1,16 @@
+class SearchResult
+	constructor: (@terms, @html) ->
+		console.log("made a search result")
+
+
 class SpringerLite
 
 	constructor: ->
 		$("#search-form").submit (e) =>
 			e.preventDefault() 
-			this.doSearch(1, e)
+			this.doSearch(1)
+
+	results: []
 
 	doSearch: (page) ->
 		$("#search-button").attr("value", "Searching...")
@@ -13,10 +20,15 @@ class SpringerLite
 			url: url
 			dataType: 'jsonp'
 			type: 'GET'
-			success: (json) -> 
-				console.log(json)
+			success: (json) => 
 				$("#search-button").attr("value", "Search")
-				$("#results").html(Mustache.to_html($('#template').html(), json));
+				renderedHTML = Mustache.to_html($('#template').html()
+				$("#results").html(renderedHTML, json))
+				@addResultToCache(term, renderedHTML)
+
+	addResultToCache: (term, renderedHTML) ->
+		@results.push(new SearchResult(term, renderedHTML))
+		console.log results
 
 $ ->
 	site = new SpringerLite()
