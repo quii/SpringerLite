@@ -21,7 +21,7 @@ class SpringerLite
 			this.doSearch(1)
 
 	doSearch: (page) ->
-		$("#search-button").attr("value", "Searching...")
+		searchButtonElement().attr("value", "Searching...")
 		term = $("#search").val()
 
 		if(@resultsCache.exists(term))
@@ -36,12 +36,15 @@ class SpringerLite
 			dataType: 'jsonp'
 			type: 'GET'
 			success: (json) => 
-				$("#search-button").attr("value", "Search")
+				searchButtonElement().attr("value", "Search")
 				renderedHTML = Mustache.to_html($('#template').html(), json)
 				@resultsCache.addResultToCache(term, renderedHTML)
 				@renderResult(term)
 
-	renderResult: (term) -> $("#results").html(@resultsCache.getHtml(term))
+	renderResult: (term) -> resultsContainer().html(@resultsCache.getHtml(term))
+
+	searchButtonElement = -> $("#search-button")
+	resultsContainer = -> $("#results")
 
 $ ->
 	site = new SpringerLite()

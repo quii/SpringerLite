@@ -46,6 +46,7 @@
   })();
 
   SpringerLite = (function() {
+    var resultsContainer, searchButtonElement;
 
     function SpringerLite() {
       var _this = this;
@@ -58,7 +59,7 @@
 
     SpringerLite.prototype.doSearch = function(page) {
       var term;
-      $("#search-button").attr("value", "Searching...");
+      searchButtonElement().attr("value", "Searching...");
       term = $("#search").val();
       if (this.resultsCache.exists(term)) {
         return this.renderResult(term);
@@ -77,7 +78,7 @@
         type: 'GET',
         success: function(json) {
           var renderedHTML;
-          $("#search-button").attr("value", "Search");
+          searchButtonElement().attr("value", "Search");
           renderedHTML = Mustache.to_html($('#template').html(), json);
           _this.resultsCache.addResultToCache(term, renderedHTML);
           return _this.renderResult(term);
@@ -86,7 +87,15 @@
     };
 
     SpringerLite.prototype.renderResult = function(term) {
-      return $("#results").html(this.resultsCache.getHtml(term));
+      return resultsContainer().html(this.resultsCache.getHtml(term));
+    };
+
+    searchButtonElement = function() {
+      return $("#search-button");
+    };
+
+    resultsContainer = function() {
+      return $("#results");
     };
 
     return SpringerLite;
