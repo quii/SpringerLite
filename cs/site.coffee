@@ -22,13 +22,16 @@ class SpringerLite
 			type: 'GET'
 			success: (json) => 
 				$("#search-button").attr("value", "Search")
-				renderedHTML = Mustache.to_html($('#template').html()
-				$("#results").html(renderedHTML, json))
+				renderedHTML = Mustache.to_html($('#template').html(), json)
 				@addResultToCache(term, renderedHTML)
+				@renderResult(term)
 
 	addResultToCache: (term, renderedHTML) ->
 		@results.push(new SearchResult(term, renderedHTML))
-		console.log results
+
+	renderResult: (term) ->
+		selectedResult = (r for r in @results when r.terms == term)[0]
+		$("#results").html(selectedResult.html)
 
 $ ->
 	site = new SpringerLite()
