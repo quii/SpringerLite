@@ -32,6 +32,7 @@
       this.resultsCache = new SearchResultCache;
       this.handleSubmit();
       this.handleLoadMore();
+      this.handleEmpty();
     }
 
     SpringerLite.prototype.doSearch = function(page) {
@@ -43,7 +44,8 @@
       } else {
         this.getResult(term);
       }
-      return searchButtonElement.attr("value", "Search");
+      searchButtonElement.attr("value", "Search");
+      return $("#load-more").show();
     };
 
     SpringerLite.prototype.getResult = function(term) {
@@ -55,9 +57,11 @@
         dataType: 'jsonp',
         type: 'GET',
         success: function(json) {
-          var renderedHTML;
+          var items, renderedHTML;
           searchButtonElement.attr("value", "Search");
           renderedHTML = Mustache.to_html($('#template').html(), json);
+          items = $(renderedHTML).find("li").html();
+          console.log(items);
           _this.resultsCache.addResultToCache(term, renderedHTML);
           return _this.renderResult(term);
         }
@@ -79,7 +83,15 @@
     SpringerLite.prototype.handleLoadMore = function() {
       var _this = this;
       return $("#load-more").click(function() {
-        return console.log("loading more..");
+        console.log("loading more..");
+        return false;
+      });
+    };
+
+    SpringerLite.prototype.handleEmpty = function() {
+      return $("#empty-cache").click(function() {
+        localStorage.clear();
+        return false;
       });
     };
 

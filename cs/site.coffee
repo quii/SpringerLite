@@ -14,6 +14,7 @@ class SpringerLite
 		@resultsCache = new SearchResultCache
 		@handleSubmit()
 		@handleLoadMore()
+		@handleEmpty()
 
 	doSearch: (page) ->
 		searchButtonElement.attr("value", "Searching...")
@@ -25,6 +26,7 @@ class SpringerLite
 			@getResult(term)
 
 		searchButtonElement.attr("value", "Search")
+		$("#load-more").show()
 
 	getResult: (term) ->
 		url = "http://api.springer.com/metadata/jsonp?q=#{term}&api_key=ueukuwx5guegu4ahjc6ajq8w&callback=?"
@@ -35,6 +37,10 @@ class SpringerLite
 			success: (json) => 
 				searchButtonElement.attr("value", "Search")
 				renderedHTML = Mustache.to_html($('#template').html(), json)
+
+				items = $(renderedHTML).find("li").html()
+				console.log(items)
+
 				@resultsCache.addResultToCache(term, renderedHTML)
 				@renderResult(term)
 
@@ -48,6 +54,12 @@ class SpringerLite
 	handleLoadMore: ->
 		$("#load-more").click =>
 			console.log("loading more..")
+			false
+
+	handleEmpty: ->
+		$("#empty-cache").click ->
+			localStorage.clear()
+			false
 
 	searchButtonElement = do -> $("#search-button")
 	resultsContainer = do -> $("#results")

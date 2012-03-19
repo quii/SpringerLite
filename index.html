@@ -23,20 +23,20 @@
 	</section>
 
 	<section>
-		<div id="results"></div>
+		<ol>
+			<div id="results"></div>
+		</ol>
 		<div id="template" style="display:none;">
-			<ol>
 			{{#records}}
 				<li>
 					<a href="{{url}}">{{title}}</a>
 				</li>
 			{{/records}}
-			</ol>
-			<button id="load-more">Load more</button>
 		</div>
+		<a id="load-more">Load more</a>
 	</section>	
 
-	<footer>Created by <a href="http://twitter.com/quii">Chris James</a></footer>
+	<footer>Created by <a href="http://twitter.com/quii">Chris James</a> - <a href="#" id="empty-cache">Empty saved searches<a/> </footer>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="http://github.com/janl/mustache.js/raw/master/mustache.js"></script>
