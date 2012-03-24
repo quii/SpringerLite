@@ -26,7 +26,7 @@
   })();
 
   SpringerLite = (function() {
-    var resultsContainer, searchButtonElement;
+    var loadMoreButton, resultsContainer, searchButtonElement;
 
     function SpringerLite() {
       this.resultsCache = new SearchResultCache;
@@ -45,7 +45,7 @@
         this.getResult(term);
       }
       searchButtonElement.attr("value", "Search");
-      return $("#load-more").show();
+      return loadMoreButton.show();
     };
 
     SpringerLite.prototype.getResult = function(term) {
@@ -57,11 +57,9 @@
         dataType: 'jsonp',
         type: 'GET',
         success: function(json) {
-          var items, renderedHTML;
+          var renderedHTML;
           searchButtonElement.attr("value", "Search");
           renderedHTML = Mustache.to_html($('#template').html(), json);
-          items = $(renderedHTML).find("li").html();
-          console.log(items);
           _this.resultsCache.addResultToCache(term, renderedHTML);
           return _this.renderResult(term);
         }
@@ -82,7 +80,7 @@
 
     SpringerLite.prototype.handleLoadMore = function() {
       var _this = this;
-      return $("#load-more").click(function() {
+      return loadMoreButton.click(function() {
         console.log("loading more..");
         return false;
       });
@@ -94,6 +92,10 @@
         return false;
       });
     };
+
+    loadMoreButton = (function() {
+      return $("#load-more");
+    })();
 
     searchButtonElement = (function() {
       return $("#search-button");
