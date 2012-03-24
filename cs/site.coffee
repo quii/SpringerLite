@@ -29,9 +29,6 @@ class SpringerLite
 		else
 			@getResult(@term)
 
-		searchButtonElement.attr("value", "Search")
-		loadMoreButton.show()
-
 	getResult: (term, page=1) ->
 		startIndex = (page*10)-1
 		url = "http://api.springer.com/metadata/jsonp?q=#{term}&api_key=ueukuwx5guegu4ahjc6ajq8w&s=#{startIndex}&callback=?"
@@ -43,13 +40,15 @@ class SpringerLite
 				console.log url
 				searchButtonElement.attr("value", "Search")
 				renderedHTML = Mustache.to_html($('#template').html(), json)
-
 				@resultsCache.addResultToCache(term, renderedHTML)
 				@renderResult(term)
+				loadMoreButton.show()
 
 	renderResult: (term) -> 
 		resultsContainer.html(@resultsCache.getHtml(term))
 		stitchResults()
+		searchButtonElement.attr("value", "Search")
+		loadMoreButton.text("Load more")
 
 	handleSubmit: ->
 		$("#search-form").submit (e) =>
@@ -60,6 +59,7 @@ class SpringerLite
 		loadMoreButton.click =>
 			numberOfResultsOnPage = $("li").length-1
 			nextPageNumber = (numberOfResultsOnPage/10)+1
+			loadMoreButton.text("Loading more...")
 			@getResult(@term, nextPageNumber)
 			false
 
@@ -73,7 +73,6 @@ class SpringerLite
 		numberOfLists = resultsContainer.find("ol").length
 		if(numberOfLists>1)
 			resultsContainer.find("li").each ->
-				console.log 
 				resultsContainer.find("ol:first").append($(this))
 				resultsContainer.find("ol").not(":first").remove()
 

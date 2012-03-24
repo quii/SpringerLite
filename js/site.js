@@ -43,12 +43,10 @@
       searchButtonElement.attr("value", "Searching...");
       this.term = $("#search").val();
       if (this.resultsCache.exists(this.term)) {
-        this.renderResult(this.term);
+        return this.renderResult(this.term);
       } else {
-        this.getResult(this.term);
+        return this.getResult(this.term);
       }
-      searchButtonElement.attr("value", "Search");
-      return loadMoreButton.show();
     };
 
     SpringerLite.prototype.getResult = function(term, page) {
@@ -67,14 +65,17 @@
           searchButtonElement.attr("value", "Search");
           renderedHTML = Mustache.to_html($('#template').html(), json);
           _this.resultsCache.addResultToCache(term, renderedHTML);
-          return _this.renderResult(term);
+          _this.renderResult(term);
+          return loadMoreButton.show();
         }
       });
     };
 
     SpringerLite.prototype.renderResult = function(term) {
       resultsContainer.html(this.resultsCache.getHtml(term));
-      return stitchResults();
+      stitchResults();
+      searchButtonElement.attr("value", "Search");
+      return loadMoreButton.text("Load more");
     };
 
     SpringerLite.prototype.handleSubmit = function() {
@@ -91,6 +92,7 @@
         var nextPageNumber, numberOfResultsOnPage;
         numberOfResultsOnPage = $("li").length - 1;
         nextPageNumber = (numberOfResultsOnPage / 10) + 1;
+        loadMoreButton.text("Loading more...");
         _this.getResult(_this.term, nextPageNumber);
         return false;
       });
@@ -108,7 +110,6 @@
       numberOfLists = resultsContainer.find("ol").length;
       if (numberOfLists > 1) {
         return resultsContainer.find("li").each(function() {
-          console.log;
           resultsContainer.find("ol:first").append($(this));
           return resultsContainer.find("ol").not(":first").remove();
         });
