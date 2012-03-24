@@ -1,6 +1,10 @@
 class SearchResultCache
 
-	addResultToCache: (term, renderedHTML) -> localStorage.setItem(term, renderedHTML)
+	addResultToCache: (term, renderedHTML) -> 
+		if @exists term
+			localStorage.setItem(term, (@getHtml(term)+renderedHTML))
+		else
+			localStorage.setItem(term, renderedHTML)
 
 	getHtml: (term) -> @findResult(term)
 
@@ -18,30 +22,34 @@ class SpringerLite
 
 	doSearch: (page) ->
 		searchButtonElement.attr("value", "Searching...")
-		term = $("#search").val()
+		@term = $("#search").val()
 
-		if(@resultsCache.exists(term))
-			@renderResult(term)
+		if(@resultsCache.exists(@term))
+			@renderResult(@term)
 		else
-			@getResult(term)
+			@getResult(@term)
 
 		searchButtonElement.attr("value", "Search")
 		loadMoreButton.show()
 
-	getResult: (term) ->
-		url = "http://api.springer.com/metadata/jsonp?q=#{term}&api_key=ueukuwx5guegu4ahjc6ajq8w&callback=?"
+	getResult: (term, page=1) ->
+		startIndex = (page*10)-1
+		url = "http://api.springer.com/metadata/jsonp?q=#{term}&api_key=ueukuwx5guegu4ahjc6ajq8w&s=#{startIndex}&callback=?"
 		$.ajax 
 			url: url
 			dataType: 'jsonp'
 			type: 'GET'
 			success: (json) => 
+				console.log url
 				searchButtonElement.attr("value", "Search")
 				renderedHTML = Mustache.to_html($('#template').html(), json)
 
 				@resultsCache.addResultToCache(term, renderedHTML)
 				@renderResult(term)
 
-	renderResult: (term) -> resultsContainer.html(@resultsCache.getHtml(term))
+	renderResult: (term) -> 
+		resultsContainer.html(@resultsCache.getHtml(term))
+		stitchResults()
 
 	handleSubmit: ->
 		$("#search-form").submit (e) =>
@@ -50,13 +58,25 @@ class SpringerLite
 
 	handleLoadMore: ->
 		loadMoreButton.click =>
-			console.log("loading more..")
+			numberOfResultsOnPage = $("li").length-1
+			nextPageNumber = (numberOfResultsOnPage/10)+1
+			@getResult(@term, nextPageNumber)
 			false
 
 	handleEmpty: ->
 		$("#empty-cache").click ->
 			localStorage.clear()
 			false
+
+	stitchResults = ->
+		#combine lists, bit hacky :)
+		numberOfLists = resultsContainer.find("ol").length
+		if(numberOfLists>1)
+			resultsContainer.find("li").each ->
+				console.log 
+				resultsContainer.find("ol:first").append($(this))
+				resultsContainer.find("ol").not(":first").remove()
+
 
 	loadMoreButton = do -> $("#load-more")
 	searchButtonElement = do -> $("#search-button")

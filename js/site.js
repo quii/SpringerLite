@@ -6,7 +6,11 @@
     function SearchResultCache() {}
 
     SearchResultCache.prototype.addResultToCache = function(term, renderedHTML) {
-      return localStorage.setItem(term, renderedHTML);
+      if (this.exists(term)) {
+        return localStorage.setItem(term, this.getHtml(term) + renderedHTML);
+      } else {
+        return localStorage.setItem(term, renderedHTML);
+      }
     };
 
     SearchResultCache.prototype.getHtml = function(term) {
@@ -26,7 +30,7 @@
   })();
 
   SpringerLite = (function() {
-    var loadMoreButton, resultsContainer, searchButtonElement;
+    var loadMoreButton, resultsContainer, searchButtonElement, stitchResults;
 
     function SpringerLite() {
       this.resultsCache = new SearchResultCache;
@@ -36,28 +40,30 @@
     }
 
     SpringerLite.prototype.doSearch = function(page) {
-      var term;
       searchButtonElement.attr("value", "Searching...");
-      term = $("#search").val();
-      if (this.resultsCache.exists(term)) {
-        this.renderResult(term);
+      this.term = $("#search").val();
+      if (this.resultsCache.exists(this.term)) {
+        this.renderResult(this.term);
       } else {
-        this.getResult(term);
+        this.getResult(this.term);
       }
       searchButtonElement.attr("value", "Search");
       return loadMoreButton.show();
     };
 
-    SpringerLite.prototype.getResult = function(term) {
-      var url,
+    SpringerLite.prototype.getResult = function(term, page) {
+      var startIndex, url,
         _this = this;
-      url = "http://api.springer.com/metadata/jsonp?q=" + term + "&api_key=ueukuwx5guegu4ahjc6ajq8w&callback=?";
+      if (page == null) page = 1;
+      startIndex = (page * 10) - 1;
+      url = "http://api.springer.com/metadata/jsonp?q=" + term + "&api_key=ueukuwx5guegu4ahjc6ajq8w&s=" + startIndex + "&callback=?";
       return $.ajax({
         url: url,
         dataType: 'jsonp',
         type: 'GET',
         success: function(json) {
           var renderedHTML;
+          console.log(url);
           searchButtonElement.attr("value", "Search");
           renderedHTML = Mustache.to_html($('#template').html(), json);
           _this.resultsCache.addResultToCache(term, renderedHTML);
@@ -67,7 +73,8 @@
     };
 
     SpringerLite.prototype.renderResult = function(term) {
-      return resultsContainer.html(this.resultsCache.getHtml(term));
+      resultsContainer.html(this.resultsCache.getHtml(term));
+      return stitchResults();
     };
 
     SpringerLite.prototype.handleSubmit = function() {
@@ -81,7 +88,10 @@
     SpringerLite.prototype.handleLoadMore = function() {
       var _this = this;
       return loadMoreButton.click(function() {
-        console.log("loading more..");
+        var nextPageNumber, numberOfResultsOnPage;
+        numberOfResultsOnPage = $("li").length - 1;
+        nextPageNumber = (numberOfResultsOnPage / 10) + 1;
+        _this.getResult(_this.term, nextPageNumber);
         return false;
       });
     };
@@ -91,6 +101,18 @@
         localStorage.clear();
         return false;
       });
+    };
+
+    stitchResults = function() {
+      var numberOfLists;
+      numberOfLists = resultsContainer.find("ol").length;
+      if (numberOfLists > 1) {
+        return resultsContainer.find("li").each(function() {
+          console.log;
+          resultsContainer.find("ol:first").append($(this));
+          return resultsContainer.find("ol").not(":first").remove();
+        });
+      }
     };
 
     loadMoreButton = (function() {

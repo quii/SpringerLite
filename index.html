@@ -23,15 +23,16 @@
 	</section>
 
 	<section>
-		<ol>
-			<div id="results"></div>
-		</ol>
+		<div id="results">
+		</div>
 		<div id="template" style="display:none;">
+			<ol>
 			{{#records}}
 				<li>
 					<a href="{{url}}">{{title}}</a>
 				</li>
 			{{/records}}
+			</ol>
 		</div>
 		<a id="load-more">Load more</a>
 	</section>	
