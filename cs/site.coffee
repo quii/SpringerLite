@@ -33,8 +33,7 @@ class SpringerLite
 			@getResult(@term)
 
 	getResult: (term, page=1) ->
-		page = page-1
-		#this is wrong
+		page = parseInt(page)-1
 		if(page==0)
 			startIndex = 1
 		else

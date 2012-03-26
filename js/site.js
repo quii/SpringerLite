@@ -58,7 +58,7 @@
       var startIndex, url,
         _this = this;
       if (page == null) page = 1;
-      page = page - 1;
+      page = parseInt(page) - 1;
       if (page === 0) {
         startIndex = 1;
       } else {
