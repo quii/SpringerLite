@@ -12,6 +12,8 @@ class SearchResultCache
 
 	findResult: (term) -> localStorage.getItem(term)
 
+	keys: -> Object.keys(localStorage)
+
 class SpringerLite
 
 	constructor: ->
@@ -19,10 +21,11 @@ class SpringerLite
 		@handleSubmit()
 		@handleLoadMore()
 		@handleEmpty()
+		@handleAutoComplete()
 
 	doSearch: (page) ->
-		searchButtonElement.attr("value", "Searching...")
-		@term = $("#search").val()
+		searchButtonElement.attr("value", "Searching")
+		@term = searchBox.val()
 
 		if(@resultsCache.exists(@term))
 			@renderResult(@term)
@@ -30,8 +33,15 @@ class SpringerLite
 			@getResult(@term)
 
 	getResult: (term, page=1) ->
-		startIndex = (page*10)-1
+		page = page-1
+		#this is wrong
+		if(page==0)
+			startIndex = 1
+		else
+			startIndex = page*10
+
 		url = "http://api.springer.com/metadata/jsonp?q=#{term}&api_key=ueukuwx5guegu4ahjc6ajq8w&s=#{startIndex}&callback=?"
+		console.log url
 		$.ajax 
 			url: url
 			dataType: 'jsonp'
@@ -49,10 +59,17 @@ class SpringerLite
 		loadMoreButton.text("Load more")
 		loadMoreButton.show()
 
+	handleAutoComplete: ->
+		searchBox.autocomplete {
+			source: @resultsCache.keys()
+			select: => @renderResult(searchBox.val())
+		}
+
+
 	handleSubmit: ->
 		$("#search-form").submit (e) =>
 			e.preventDefault() 
-			this.doSearch(1)
+			this.doSearch()
 
 	handleLoadMore: ->
 		loadMoreButton.click =>
@@ -79,6 +96,7 @@ class SpringerLite
 	loadMoreButton = do -> $("#load-more")
 	searchButtonElement = do -> $("#search-button")
 	resultsContainer = do -> $("#results")
+	searchBox = do -> $("#search")
 
 $ ->
 	site = new SpringerLite()

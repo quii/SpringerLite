@@ -25,23 +25,28 @@
       return localStorage.getItem(term);
     };
 
+    SearchResultCache.prototype.keys = function() {
+      return Object.keys(localStorage);
+    };
+
     return SearchResultCache;
 
   })();
 
   SpringerLite = (function() {
-    var loadMoreButton, resultsContainer, searchButtonElement, stitchResults;
+    var loadMoreButton, resultsContainer, searchBox, searchButtonElement, stitchResults;
 
     function SpringerLite() {
       this.resultsCache = new SearchResultCache;
       this.handleSubmit();
       this.handleLoadMore();
       this.handleEmpty();
+      this.handleAutoComplete();
     }
 
     SpringerLite.prototype.doSearch = function(page) {
-      searchButtonElement.attr("value", "Searching...");
-      this.term = $("#search").val();
+      searchButtonElement.attr("value", "Searching");
+      this.term = searchBox.val();
       if (this.resultsCache.exists(this.term)) {
         return this.renderResult(this.term);
       } else {
@@ -53,15 +58,20 @@
       var startIndex, url,
         _this = this;
       if (page == null) page = 1;
-      startIndex = (page * 10) - 1;
+      page = page - 1;
+      if (page === 0) {
+        startIndex = 1;
+      } else {
+        startIndex = page * 10;
+      }
       url = "http://api.springer.com/metadata/jsonp?q=" + term + "&api_key=ueukuwx5guegu4ahjc6ajq8w&s=" + startIndex + "&callback=?";
+      console.log(url);
       return $.ajax({
         url: url,
         dataType: 'jsonp',
         type: 'GET',
         success: function(json) {
           var renderedHTML;
-          console.log(url);
           searchButtonElement.attr("value", "Search");
           renderedHTML = Mustache.to_html($('#template').html(), json);
           _this.resultsCache.addResultToCache(term, renderedHTML);
@@ -78,11 +88,21 @@
       return loadMoreButton.show();
     };
 
+    SpringerLite.prototype.handleAutoComplete = function() {
+      var _this = this;
+      return searchBox.autocomplete({
+        source: this.resultsCache.keys(),
+        select: function() {
+          return _this.renderResult(searchBox.val());
+        }
+      });
+    };
+
     SpringerLite.prototype.handleSubmit = function() {
       var _this = this;
       return $("#search-form").submit(function(e) {
         e.preventDefault();
-        return _this.doSearch(1);
+        return _this.doSearch();
       });
     };
 
@@ -126,6 +146,10 @@
 
     resultsContainer = (function() {
       return $("#results");
+    })();
+
+    searchBox = (function() {
+      return $("#search");
     })();
 
     return SpringerLite;
