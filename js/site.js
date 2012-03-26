@@ -65,8 +65,7 @@
           searchButtonElement.attr("value", "Search");
           renderedHTML = Mustache.to_html($('#template').html(), json);
           _this.resultsCache.addResultToCache(term, renderedHTML);
-          _this.renderResult(term);
-          return loadMoreButton.show();
+          return _this.renderResult(term);
         }
       });
     };
@@ -75,7 +74,8 @@
       resultsContainer.html(this.resultsCache.getHtml(term));
       stitchResults();
       searchButtonElement.attr("value", "Search");
-      return loadMoreButton.text("Load more");
+      loadMoreButton.text("Load more");
+      return loadMoreButton.show();
     };
 
     SpringerLite.prototype.handleSubmit = function() {

@@ -37,18 +37,17 @@ class SpringerLite
 			dataType: 'jsonp'
 			type: 'GET'
 			success: (json) => 
-				console.log url
 				searchButtonElement.attr("value", "Search")
 				renderedHTML = Mustache.to_html($('#template').html(), json)
 				@resultsCache.addResultToCache(term, renderedHTML)
 				@renderResult(term)
-				loadMoreButton.show()
 
 	renderResult: (term) -> 
 		resultsContainer.html(@resultsCache.getHtml(term))
 		stitchResults()
 		searchButtonElement.attr("value", "Search")
 		loadMoreButton.text("Load more")
+		loadMoreButton.show()
 
 	handleSubmit: ->
 		$("#search-form").submit (e) =>
